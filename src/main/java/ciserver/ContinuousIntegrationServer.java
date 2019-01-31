@@ -10,6 +10,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 /**
   Skeleton of a ContinuousIntegrationServer which acts as webhook
   See the Jetty documentation for API documentation of those classes.
