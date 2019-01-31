@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class ContinuousIntegrationServerTest {
-	@Test
-	public void testSample() {
-		fail();
-	}
+    @Test
+    public void testSample() {
+        fail();
+    }
 }
