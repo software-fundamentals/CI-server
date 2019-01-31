@@ -1,5 +1,6 @@
 package ciserver;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
@@ -13,7 +14,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import org.json.JSONObject;
+import org.json.*;
 import org.json.JSONArray;
 
 /**
@@ -32,43 +33,16 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
 
-        System.out.println(target);
-        System.out.println("Request");
-        System.out.println(request);
-        System.out.println(baseRequest.getContext());
-        System.out.println("Response");
-        System.out.println(response);
 
+        System.out.println("Request method:");
+        System.out.println(request.getMethod());
 
-        String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println(body);
-        response.getWriter().println(body);
-        //response.getWriter().println("CI job done");
-//        Runtime rt = Runtime.getRuntime();
-//        Process pr = rt.exec("gradle build");
-//        Process ps = rt.exec("gradle test");
+        JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
 
-        final Process p = Runtime.getRuntime().exec("gradle build");
+//        EXAMPLE: This is how to get strings and object from the payload
+//        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
 
-        new Thread(new Runnable() {
-            public void run() {
-                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line = null;
-
-                try {
-                    while ((line = input.readLine()) != null)
-                        System.out.println(line);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-        try {
-            p.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        response.getWriter().println("CI up and running");
 
         // here you do all the continuous integration tasks
         // for example
@@ -76,12 +50,36 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // 2nd compile the code
 
 
+//        TODO: Make the gradle build code below a complete and standalone function
+//        final Process p = Runtime.getRuntime().exec("gradle build");
+//
+//        new Thread(new Runnable() {
+//            public void run() {
+//                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//                String line = null;
+//
+//                try {
+//                    while ((line = input.readLine()) != null)
+//                        System.out.println(line);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+//
+//        try {
+//            p.waitFor();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+
     }
 
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {
-        Server server = new Server(8080);
+        Server server = new Server(8989);
         server.setHandler(new ContinuousIntegrationServer());
         server.start();
         server.join();
