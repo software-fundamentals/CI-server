@@ -16,7 +16,7 @@ plugins {
     // Apply the java plugin to add support for IntelliJ
     id 'idea'
 
-
+		id 'checkstyle'
 }
 
 repositories {
