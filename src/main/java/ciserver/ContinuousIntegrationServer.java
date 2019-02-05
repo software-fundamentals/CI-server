@@ -38,6 +38,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         System.out.println(request.getMethod());
 
         JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
+        String ssh_url = obj.getJSONObject("repository").getString("ssh_url");
+        System.out.println(ssh_url);
 
 //        EXAMPLE: This is how to get strings and object from the payload
 //        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
