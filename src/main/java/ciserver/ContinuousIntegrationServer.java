@@ -70,8 +70,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 //new Git(fr).pull().call();
                 //System.out.println("Successfully pulled from origin");
                 RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
-                new Git(fr).fetch().setRefSpecs(rs).call();
+                Git git = new Git(fr);
+                git.fetch().setRefSpecs(rs).call();
                 System.out.println("Successfully fetched branch " + branch);
+                String shortBranchName = branch.substring(branch.lastIndexOf("/")+1);
+                git.checkout().setName(shortBranchName).call();
+                System.out.println("Successfully checked out branch " + shortBranchName);
             } catch (Exception f) {
                 f.printStackTrace();
             }
