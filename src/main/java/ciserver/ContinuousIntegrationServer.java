@@ -59,7 +59,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
             e.printStackTrace();
         }
 
-
         //        EXAMPLE: This is how to get strings and object from the payload
         //        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
 
