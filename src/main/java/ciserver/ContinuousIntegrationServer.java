@@ -23,7 +23,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 //import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 
 /**
   Skeleton of a ContinuousIntegrationServer which acts as webhook
@@ -55,6 +58,19 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 .setDirectory(new File(cloneDir))
                 .call();
             System.out.println(repo.getRepository());
+            System.out.println("Successfully cloned");
+        } catch (JGitInternalException e) {
+            try {
+                Repository fr = new FileRepositoryBuilder()
+                    .setGitDir(new File(cloneDir))
+                    .readEnvironment()
+                    .findGitDir()
+                    .build();
+                new Git(fr).pull().call();
+                System.out.println("Successfully pulled from origin");
+            } catch (Exception f) {
+                f.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
