@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-//import java.io.BufferedReader;
+import java.io.BufferedReader;
 import java.io.IOException;
-//import java.io.InputStreamReader;
+import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.Server;
@@ -35,46 +35,46 @@ public class ContinuousIntegrationServer extends AbstractHandler
             Request baseRequest,
             HttpServletRequest request,
             HttpServletResponse response)
-            throws IOException, ServletException
-        {
-            response.setContentType("text/html;charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
+            throws IOException, ServletException {
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        baseRequest.setHandled(true);
 
 
-            System.out.println("Request method:");
-            System.out.println(request.getMethod());
+        System.out.println("Request method:");
+        System.out.println(request.getMethod());
 
-            JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
-            String url = obj.getJSONObject("repository").getString("url");
-            String branch = obj.getString("ref");
+        JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
+        String url = obj.getJSONObject("repository").getString("url");
+        String branch = obj.getString("ref");
 
-            try {
-                Git repo = Git.cloneRepository()
-                    .setURI(url)
-                    .setDirectory(new File("~/CI"))
-                    .call();
-                System.out.println(repo.getRepository());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //        EXAMPLE: This is how to get strings and object from the payload
-            //        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
-
-            response.getWriter().println("CI up and running");
-
-            // here you do all the continuous integration tasks
-            // for example
-            // 1st clone your repository
-            // 2nd compile the code
-
-            runGradle();
-
+        String cloneDir = "~/CI";
+        try {
+            Git repo = Git.cloneRepository()
+                .setURI(url)
+                .setDirectory(new File(cloneDir))
+                .call();
+            System.out.println(repo.getRepository());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-    private boolean runGradle() {
-        final Process p = Runtime.getRuntime().exec("gradle build");
+        //        EXAMPLE: This is how to get strings and object from the payload
+        //        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
+
+        response.getWriter().println("CI up and running");
+
+        // here you do all the continuous integration tasks
+        // for example
+        // 1st clone your repository
+        // 2nd compile the code
+
+        System.out.println(runGradle(cloneDir));
+
+    }
+
+    private boolean runGradle(String dir) throws IOException {
+        final Process p = Runtime.getRuntime().exec("gradle build -b " + dir.replace("~", "\\~") + "/build.gradle");
         new Thread(new Runnable() {
             public void run() {
                 BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -91,8 +91,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         try {
             p.waitFor();
+            return true;
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
