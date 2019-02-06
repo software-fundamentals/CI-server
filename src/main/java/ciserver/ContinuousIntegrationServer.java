@@ -25,6 +25,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.RefSpec;
 //import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 
@@ -66,8 +67,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
                     .readEnvironment()
                     .findGitDir()
                     .build();
-                new Git(fr).pull().call();
-                System.out.println("Successfully pulled from origin");
+                //new Git(fr).pull().call();
+                //System.out.println("Successfully pulled from origin");
+                new Git(fr).fetch().setRefSpecs(new RefSpec(branch)).call();
             } catch (Exception f) {
                 f.printStackTrace();
             }
