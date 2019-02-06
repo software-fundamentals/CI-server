@@ -36,64 +36,64 @@ public class ContinuousIntegrationServer extends AbstractHandler
             HttpServletRequest request,
             HttpServletResponse response)
             throws IOException, ServletException
-    {
-        response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
+        {
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
 
 
-        System.out.println("Request method:");
-        System.out.println(request.getMethod());
+            System.out.println("Request method:");
+            System.out.println(request.getMethod());
 
-        JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
-        String url = obj.getJSONObject("repository").getString("url");
-        String branch = obj.getString("ref");
+            JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
+            String url = obj.getJSONObject("repository").getString("url");
+            String branch = obj.getString("ref");
 
-        try {
-            Git repo = Git.cloneRepository()
-                .setURI(url)
-                .setDirectory(new File("~/CI"))
-                .call();
-            System.out.println(repo.getRepository());
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                Git repo = Git.cloneRepository()
+                    .setURI(url)
+                    .setDirectory(new File("~/CI"))
+                    .call();
+                System.out.println(repo.getRepository());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //        EXAMPLE: This is how to get strings and object from the payload
+            //        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
+
+            response.getWriter().println("CI up and running");
+
+            // here you do all the continuous integration tasks
+            // for example
+            // 1st clone your repository
+            // 2nd compile the code
+
+            runGradle();
+
         }
 
-        //        EXAMPLE: This is how to get strings and object from the payload
-        //        System.out.println(obj.getJSONObject("repository").getString("ssh_url"));
+    private boolean runGradle() {
+        final Process p = Runtime.getRuntime().exec("gradle build");
+        new Thread(new Runnable() {
+            public void run() {
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line = null;
 
-        response.getWriter().println("CI up and running");
+                try {
+                    while ((line = input.readLine()) != null)
+                        System.out.println(line);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
-        // here you do all the continuous integration tasks
-        // for example
-        // 1st clone your repository
-        // 2nd compile the code
-
-
-        //        TODO: Make the gradle build code below a complete and standalone function
-        //        final Process p = Runtime.getRuntime().exec("gradle build");
-        //
-        //        new Thread(new Runnable() {
-        //            public void run() {
-        //                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        //                String line = null;
-        //
-        //                try {
-        //                    while ((line = input.readLine()) != null)
-        //                        System.out.println(line);
-        //                } catch (IOException e) {
-        //                    e.printStackTrace();
-        //                }
-        //            }
-        //        }).start();
-        //
-        //        try {
-        //            p.waitFor();
-        //        } catch (InterruptedException e) {
-        //            e.printStackTrace();
-        //        }
-
-
+        try {
+            p.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     // used to start the CI server in command line
