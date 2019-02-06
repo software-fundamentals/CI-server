@@ -62,7 +62,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         } catch (JGitInternalException e) {
             try {
                 Repository fr = new FileRepositoryBuilder()
-                    .setGitDir(new File(cloneDir))
+                    .setGitDir(new File(cloneDir + "/.git"))
                     .readEnvironment()
                     .findGitDir()
                     .build();
