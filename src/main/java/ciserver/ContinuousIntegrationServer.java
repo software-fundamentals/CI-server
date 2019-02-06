@@ -69,7 +69,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
                     .build();
                 //new Git(fr).pull().call();
                 //System.out.println("Successfully pulled from origin");
-                RefSpec rs = new RefSpec(String.format("refs/heads/%1$s:refs/remotes/origin/%1$s", branch));
+                RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
                 new Git(fr).fetch().setRefSpecs(rs).call();
                 System.out.println("Successfully fetched branch " + branch);
             } catch (Exception f) {
