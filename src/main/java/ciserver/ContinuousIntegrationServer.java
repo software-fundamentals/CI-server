@@ -32,6 +32,32 @@ import org.eclipse.jgit.api.errors.JGitInternalException;
   */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
+    public ContinuousIntegrationServer() {}
+
+    public String[] parseJSON(HttpServletRequest request) {
+        String[] parsedData = new String[2];
+        try {
+            JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
+            try {
+                parsedData[0] = obj.getJSONObject("repository").getString("url");
+            } catch (JSONException e) {
+                throw new java.lang.Error("Error occured parsing the GitHub url");
+            }
+            try {
+                parsedData[1] = obj.getString("ref");
+            } catch (JSONException e) {
+                throw new java.lang.Error("Error occured parsing the branch name");
+            }
+        } catch (JSONException e) {
+            throw new java.lang.Error("Error occured parsing the request");
+        } catch (IOException e) {
+            throw new java.lang.Error("Error occured parsing the request");
+        } catch (NullPointerException e) {
+            throw new java.lang.Error("Request was empty");
+        }
+        return parsedData;
+    }
+
     public void handle(String target,
             Request baseRequest,
             HttpServletRequest request,
@@ -45,9 +71,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         System.out.println("Request method:");
         System.out.println(request.getMethod());
 
-        JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
-        String url = obj.getJSONObject("repository").getString("url");
-        String branch = obj.getString("ref");
+        String[] parsedData = parseJSON(request);
+        if (parsedData == null)
+            return;
+        String url = parsedData[0];
+        String branch = parsedData[1];
 
         String cloneDir = "~/CI";
         try {
