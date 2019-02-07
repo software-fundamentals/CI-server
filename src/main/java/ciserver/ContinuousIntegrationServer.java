@@ -71,10 +71,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 .readEnvironment()
                 .findGitDir()
                 .build();
-            new Git(fr).pull().call();
+            Git git = new Git(fr);
+            git.checkout().setName("master").call();
+            git.pull().call();
             System.out.println("Successfully pulled from origin");
             //RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
-            Git git = new Git(fr);
             //git.fetch().setRefSpecs(rs).call();
             //System.out.println("Successfully fetched branch " + branch);
             String shortBranchName = branch.split("refs/heads/")[1];
