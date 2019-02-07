@@ -15,7 +15,6 @@ import org.json.JSONObject;
 public class Notification {
 
     private static final String GIT_HEADER = "X-GitHub-Event";
-    private static final String PULL = "pull_request";
     private static final String PUSH = "push";
 
     public void createNotificationFromRequest(HttpServletRequest request, BuildStatus status, String message) throws IOException {
@@ -53,7 +52,8 @@ public class Notification {
         }
 
         text += "\n" + message;
-        NotificationJson.createSlackJson(authorName, authorUrl, title, titleLink, text, color);
+        JSONObject slackJson = NotificationJson.createSlackJson(authorName, authorUrl, title, titleLink, text, color);
+        SlackIntegration.notifySlack(slackJson);
     }
 
     // public void notifySuccess() {

@@ -12,7 +12,7 @@ public class SlackIntegration {
 
     private static final String SLACK_URL = "https://hooks.slack.com/services/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";
 
-    public void notifySlack(JSONObject jsonBody) throws IOException, MalformedURLException {
+    public static void notifySlack(JSONObject jsonBody) throws IOException, MalformedURLException {
         try {
             URL url = new URL (SLACK_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
