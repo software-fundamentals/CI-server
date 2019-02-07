@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import notification.NotificationJson;
 import notification.SlackIntegration;
-import utils.BuildStatus;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
