@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.Server;
@@ -36,17 +37,26 @@ public class ContinuousIntegrationServer extends AbstractHandler
 {
     public ContinuousIntegrationServer() {}
 
-    public String[] parseJSON(HttpServletRequest request) {
-        String[] parsedData = new String[2];
+    public HashMap<String, String> parseJSON(HttpServletRequest request) {
+        HashMap<String, String> parsedData = new HashMap<String, String>();
         try {
             JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
             try {
-                parsedData[0] = obj.getJSONObject("repository").getString("url");
+                parsedData.put("repository_url", obj.getJSONObject("repository").getString("url"));
             } catch (JSONException e) {
                 throw new java.lang.Error("Error occured parsing the GitHub url");
             }
             try {
-                parsedData[1] = obj.getString("ref");
+                parsedData.put("branch", obj.getString("ref"));
+            } catch (JSONException e) {
+                throw new java.lang.Error("Error occured parsing the branch name");
+            }
+            try {
+                JSONObject sender = obj.getJSONObject("sender");
+                parsedData.put("authorName", sender.getString("login"));
+                parsedData.put("authorUrl", sender.getString("url"));
+                parsedData.put("sha", obj.getString("after"));
+                parsedData.put("compareUrl", obj.getString("compare"));
             } catch (JSONException e) {
                 throw new java.lang.Error("Error occured parsing the branch name");
             }
@@ -73,11 +83,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         System.out.println("Request method:");
         System.out.println(request.getMethod());
 
-        String[] parsedData = parseJSON(request);
+        HashMap<String, String> parsedData = parseJSON(request);
         if (parsedData == null)
             return;
-        String url = parsedData[0];
-        String branch = parsedData[1];
+        String url = parsedData.get("repository_url");
+        String branch = parsedData.get("branch");
 
         String cloneDir = "~/CI";
         try {
@@ -123,7 +133,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // 2nd compile the code
 
         GradleBuildOutput output = runGradle(cloneDir);
-        Notification.createNotificationFromRequest(request, output.result, output.log);
+        Notification.createNotification(parsedData.get("authorName"), parsedData.get("authorUrl"), parsedData.get("branch"), parsedData.get("compareUrl"), parsedData.get("sha"), output.result, output.log);
         System.out.println(output.result);
         System.out.println(output.log);
     }
