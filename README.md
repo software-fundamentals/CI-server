@@ -19,6 +19,8 @@ If you don't have Gradle installed, just run `gradle.bat build` (Windows), or `.
 gradle build
 ```
 
+4. Check out a branch, make a change to a file, push the changes and watch the status of the commit change.
+
 ## Testing
 * `gradle build` compiles the program and runs all tests
 * `gradle test` runs all tests
