@@ -26,7 +26,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.RefSpec;
-//import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 
 /**
@@ -61,25 +61,26 @@ public class ContinuousIntegrationServer extends AbstractHandler
             System.out.println(repo.getRepository());
             System.out.println("Successfully cloned");
         } catch (JGitInternalException e) {
-            try {
-                Repository fr = new FileRepositoryBuilder()
-                    .setGitDir(new File(cloneDir + "/.git"))
-                    .readEnvironment()
-                    .findGitDir()
-                    .build();
-                //new Git(fr).pull().call();
-                //System.out.println("Successfully pulled from origin");
-                RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
-                Git git = new Git(fr);
-                git.fetch().setRefSpecs(rs).call();
-                System.out.println("Successfully fetched branch " + branch);
-                String shortBranchName = branch.split("refs/heads/")[1];
-                git.checkout().setName(shortBranchName).call();
-                System.out.println("Successfully checked out branch " + shortBranchName);
-            } catch (Exception f) {
-                f.printStackTrace();
-            }
-        } catch (Exception e) {
+            System.out.println("Destination path already exists and is not an empty directory");
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+        }
+        try {
+            Repository fr = new FileRepositoryBuilder()
+                .setGitDir(new File(cloneDir + "/.git"))
+                .readEnvironment()
+                .findGitDir()
+                .build();
+            //new Git(fr).pull().call();
+            //System.out.println("Successfully pulled from origin");
+            RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
+            Git git = new Git(fr);
+            git.fetch().setRefSpecs(rs).call();
+            System.out.println("Successfully fetched branch " + branch);
+            String shortBranchName = branch.split("refs/heads/")[1];
+            git.checkout().setName(shortBranchName).call();
+            System.out.println("Successfully checked out branch " + shortBranchName);
+        } catch (GitAPIException e) {
             e.printStackTrace();
         }
 
