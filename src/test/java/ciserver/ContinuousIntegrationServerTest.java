@@ -7,6 +7,6 @@ import org.junit.jupiter.api.Test;
 class ContinuousIntegrationServerTest {
     @Test
     public void testSample() {
-        assertEquals(3, 4);
+        assertEquals(3, 5);
     }
 }
