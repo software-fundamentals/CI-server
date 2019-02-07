@@ -5,9 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.Server;
@@ -19,7 +17,6 @@ import org.json.*;
 
 //import java.util.Arrays;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
@@ -95,20 +92,24 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // 1st clone your repository
         // 2nd compile the code
 
-        System.out.println(runGradle(cloneDir));
+        GradleBuildOutput output = runGradle(cloneDir);
+        System.out.println(output.result);
+        System.out.println(output.log);
 
     }
 
-    private boolean runGradle(String dir) throws IOException {
+    private GradleBuildOutput runGradle(String dir) throws IOException {
         final Process p = Runtime.getRuntime().exec("gradle build -b " + dir.replace("~", "\\~") + "/build.gradle");
+        StringBuilder successData = new StringBuilder();
         new Thread(new Runnable() {
             public void run() {
-                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line = null;
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
                 try {
-                    while ((line = input.readLine()) != null)
-                        System.out.println(line);
+                    while ((line = input.readLine()) != null) {
+                        successData.append(line + "\n");
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -117,15 +118,24 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         try {
             p.waitFor();
-            System.out.println(p.exitValue());
             if (p.exitValue() != 0) {
-                System.out.println(p.getErrorStream());
-                return false;
+                StringBuilder errorData = new StringBuilder();
+                BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                String line = null;
+                try {
+                    while ((line = error.readLine()) != null) {
+                        errorData.append(line + "\n");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return new GradleBuildOutput(false, errorData.toString());
+            } else {
+                return new GradleBuildOutput(true, successData.toString());
             }
-            return true;
         } catch (InterruptedException e) {
             e.printStackTrace();
-            return false;
+            return new GradleBuildOutput(false, "Fatal error occurred.");
         }
     }
 
