@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.transport.RefSpec;
+//import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 
@@ -71,14 +71,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 .readEnvironment()
                 .findGitDir()
                 .build();
-            //new Git(fr).pull().call();
-            //System.out.println("Successfully pulled from origin");
-            RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
+            new Git(fr).pull().call();
+            System.out.println("Successfully pulled from origin");
+            //RefSpec rs = new RefSpec(String.format("%1$s:%1$s", branch));
             Git git = new Git(fr);
-            git.fetch().setRefSpecs(rs).call();
-            System.out.println("Successfully fetched branch " + branch);
+            //git.fetch().setRefSpecs(rs).call();
+            //System.out.println("Successfully fetched branch " + branch);
             String shortBranchName = branch.split("refs/heads/")[1];
-            git.checkout().setName(shortBranchName).call();
+            git.checkout().setName("origin/" + shortBranchName).call();
             System.out.println("Successfully checked out branch " + shortBranchName);
         } catch (GitAPIException e) {
             e.printStackTrace();
