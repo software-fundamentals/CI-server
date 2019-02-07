@@ -118,6 +118,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
             p.waitFor();
             System.out.println(p.exitValue());
             if (p.exitValue() != 0) {
+                System.out.println(p.getErrorStream());
                 return false;
             }
             return true;
