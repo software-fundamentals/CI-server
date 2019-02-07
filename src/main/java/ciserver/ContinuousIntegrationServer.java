@@ -15,6 +15,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.*;
 //import org.json.JSONArray;
 
+import notification.Notification;
+
 //import java.util.Arrays;
 
 import java.io.IOException;
@@ -121,9 +123,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // 2nd compile the code
 
         GradleBuildOutput output = runGradle(cloneDir);
+        Notification.createNotificationFromRequest(request, output.result, output.log);
         System.out.println(output.result);
         System.out.println(output.log);
-
     }
 
     private GradleBuildOutput runGradle(String dir) throws IOException {

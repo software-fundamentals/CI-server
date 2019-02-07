@@ -17,7 +17,7 @@ public class Notification {
     private static final String GIT_HEADER = "X-GitHub-Event";
     private static final String PUSH = "push";
 
-    public void createNotificationFromRequest(HttpServletRequest request, BuildStatus status, String message) throws IOException {
+    public static void createNotificationFromRequest(HttpServletRequest request, Boolean success, String message) throws IOException {
         String authorName = "", authorUrl="", title = "", titleLink = "", text = "Build status: ", color = "", branch = "", sha = "";
         JSONObject sender;
 
@@ -38,30 +38,17 @@ public class Notification {
                 return;
         }
 
-        switch (status) {
-            case SUCCESS:
-                color = "success";
-                text += "SUCCESS";
-                break;
-            case FAILURE:
-                color = "danger";
-                text += "FAILURE";
-                break;
-            default:
-                return;
+        if (success) {
+            color = "success";
+            text += "SUCCESS";
+        } else {
+            color = "danger";
+            text += "FAILURE";
         }
 
         text += "\n" + message;
         JSONObject slackJson = NotificationJson.createSlackJson(authorName, authorUrl, title, titleLink, text, color);
         SlackIntegration.notifySlack(slackJson);
     }
-
-    // public void notifySuccess() {
-    //     //slackIntegration.notifySlack(url, requestHeader, branch, success, sender, senderURL, titleLink);
-    // }
-
-    // public void notifyFailure() {
-    //     // slackIntegration.notifySlack(endpoint, eventType, branch, success, sender, senderURL, titleLink);
-    // }
 }
 
