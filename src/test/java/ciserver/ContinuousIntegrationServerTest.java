@@ -2,6 +2,8 @@ package ciserver;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -44,9 +46,9 @@ class ContinuousIntegrationServerTest {
         obj.put("ref", "test_ref");
         byte[] jsonBytes = obj.toString().getBytes();
         request2.setContent(jsonBytes); //A request on the correct format
-        String[] result = ci.parseJSON(request2);
+        HashMap<String, String> result = ci.parseJSON(request2);
 
-        assertEquals(result[0], "test_url");
-        assertEquals(result[1], "test_ref");
+        assertEquals(result.get("repository_url"), "test_url");
+        assertEquals(result.get("branch"), "test_ref");
     }
 }
