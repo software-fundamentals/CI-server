@@ -58,7 +58,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 parsedData.put("sha", obj.getString("after"));
                 parsedData.put("compareUrl", obj.getString("compare"));
             } catch (JSONException e) {
-                throw new java.lang.Error("Error occured parsing the branch name");
+                throw new java.lang.Error("Error occured parsing the sender data");
             }
         } catch (JSONException e) {
             throw new java.lang.Error("Error occured parsing the request");
