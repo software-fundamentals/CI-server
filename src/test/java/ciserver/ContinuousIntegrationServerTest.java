@@ -41,14 +41,24 @@ class ContinuousIntegrationServerTest {
         MockHttpServletRequest request2 = new MockHttpServletRequest();
         JSONObject obj = new JSONObject();
         JSONObject repo = new JSONObject();
+        JSONObject sender = new JSONObject();
         repo.put("url", "test_url");
         obj.put("repository", repo);
         obj.put("ref", "test_ref");
+        sender.put("login", "test_login");
+        sender.put("url", "test_url");
+        obj.put("after", "test_after");
+        obj.put("compare", "test_compare");
+        obj.put("sender", sender);
         byte[] jsonBytes = obj.toString().getBytes();
         request2.setContent(jsonBytes); //A request on the correct format
         HashMap<String, String> result = ci.parseJSON(request2);
 
         assertEquals(result.get("repository_url"), "test_url");
         assertEquals(result.get("branch"), "test_ref");
+        assertEquals(result.get("authorName"), "test_login");
+        assertEquals(result.get("authorUrl"), "test_url");
+        assertEquals(result.get("sha"), "test_after");
+        assertEquals(result.get("compareUrl"), "test_compare");
     }
 }
