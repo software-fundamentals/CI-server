@@ -25,11 +25,10 @@ public class Notification {
 
         text += "\n" + message;
         JSONObject slackJson = NotificationJson.createSlackJson(authorName, authorUrl, title, compareUrl, text, color);
-        //JSONObject gitJson = NotificationJson.createCommitJson(success ? "success" : "failure", "https://google.com", text, "Continuous Integration Server");
-        JSONObject object = NotificationJson.createCommitJson("success", "http://google.com/", "test", "CI SERVER");
-        GitHubIntegration.setCommitStatus(sha, object);
+        JSONObject gitJson = NotificationJson.createCommitJson((success ? "success" : "failure"), "https://google.com", "Build: " + (success ? "SUCCESS" : "FAILURE"), "CI Server");
+        //JSONObject object = NotificationJson.createCommitJson("success", "http://google.com/", "Build " + (success ?, "CI SERVER");
+        GitHubIntegration.setCommitStatus(sha, gitJson);
         SlackIntegration.notifySlack(slackJson);
-        //GitHubIntegration.setCommitStatus(sha, gitJson);
     }
 }
 
