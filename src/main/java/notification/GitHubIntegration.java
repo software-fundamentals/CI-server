@@ -12,10 +12,10 @@ import org.json.JSONObject;
 
 public class GitHubIntegration {
 
-    DotEnv dotenv = DotEnv.load();
-    private static final String OAUTH_TOKEN = dotenv.get("GITHUB_TOKEN");
+    static Dotenv dotenv = Dotenv.load();
+    private final static String OAUTH_TOKEN = dotenv.get("GITHUB_TOKEN");
 
-    private static final String baseUrl = "https://api.github.com/repos/software-fundamentals/CI-server/statuses/";
+    private final static String baseUrl = "https://api.github.com/repos/software-fundamentals/CI-server/statuses/";
 
     public static void setCommitStatus(String sha, JSONObject jsonBody) throws IOException, MalformedURLException {
         try {
@@ -25,7 +25,7 @@ public class GitHubIntegration {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", OAUTH_TOKEN);
+            connection.setRequestProperty("Authorization", "Bearer " + OAUTH_TOKEN);
             connection.connect();
 
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
