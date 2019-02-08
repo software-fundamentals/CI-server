@@ -2,6 +2,8 @@ package notification;
 
 import notification.NotificationJson;
 
+import java.util.HashMap;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -12,6 +14,9 @@ import org.json.JSONObject;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+/**
+ * Class for sending notifications to connected services.
+ */
 public class Notification {
 
     static Dotenv dotenv = Dotenv.load();
@@ -19,8 +24,15 @@ public class Notification {
     private final static String SLACK_URL = dotenv.get("SLACK_URL");
     private final static String BASE_URL = "https://api.github.com/repos/software-fundamentals/CI-server/statuses/";
 
-    public static void sendNotifications(String authorName, String authorUrl, String branch, String compareUrl, String sha, Boolean success, String message) throws IOException {
-        String title = "Commit on branch: " + branch;
+    /**
+     * Method to send notifications to connected services about build status
+     * Currently Slack and GitHub.
+     * @param parsedData a map of strings (parsed from JSON)
+     * @param success indicates whether the build succeeded (true) or not
+     * @param message the message to send as notification text (for Slack)
+     */
+    public static void sendNotifications(HashMap<String, String> parsedData, Boolean success, String message) throws IOException {
+        String title = "Commit on branch: " + parsedData.get("branch");
         String text = "Build status: ";
         String color;
 
@@ -33,12 +45,29 @@ public class Notification {
         }
 
         text += "\n" + message;
-        JSONObject slackJson = NotificationJson.createSlackJson(authorName, authorUrl, title, compareUrl, text, color);
-        JSONObject gitJson = NotificationJson.createCommitJson((success ? "success" : "failure"), compareUrl, "Build: " + (success ? "SUCCESS" : "FAILURE"), "CI Server");
+        JSONObject slackJson = NotificationJson.createSlackJson(
+            parsedData.get("authorName"),
+            parsedData.get("authorUrl"),
+            title,
+            parsedData.get("compareUrl"),
+            text,
+            color);
+        JSONObject gitJson = NotificationJson.createCommitJson(
+            (success ? "success" : "failure"),
+            parsedData.get("compareUrl"),
+            "Build: " + (success ? "SUCCESS" : "FAILURE"),
+            "CI Server");
         makePostRequest(SLACK_URL, slackJson);
-        makePostRequest(BASE_URL + sha, gitJson);
+        makePostRequest(BASE_URL + parsedData.get("sha"), gitJson);
     }
 
+    /**
+     * Method for making a post request
+     * @param endpoint the url target of the request
+     * @param jsonBody the contents of the request
+     * @throws IOException
+     * @throws MalformedURLException
+     */
     private static void makePostRequest(String endpoint, JSONObject jsonBody) throws IOException, MalformedURLException {
         try {
             URL url = new URL (endpoint);
