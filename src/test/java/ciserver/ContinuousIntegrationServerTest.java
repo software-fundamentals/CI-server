@@ -58,7 +58,7 @@ class ContinuousIntegrationServerTest {
         assertEquals(result.get("branch"), "test_ref");
         assertEquals(result.get("authorName"), "test_login");
         assertEquals(result.get("authorUrl"), "test_url");
-        assertEquals(result.get("sha"), "test_after");
+        assertEquals(result.get("shb"), "test_after");
         assertEquals(result.get("compareUrl"), "test_compare");
     }
 }
