@@ -6,6 +6,7 @@ A small CI server that uses a GitHub Webhook and [ngrok](https://ngrok.com) to l
 
 ## Setup
 If you don't have Gradle installed, just run `gradle.bat build` (Windows), or `./gradle build` (OS X, GNU/Linux).
+You will also need to create a .env file with a [personal GitHub token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) on the format: `GITHUB_TOKEN=YOUR_TOKEN_HERE`. **Do not** add this file to Git.
 
 ## Running
 1. First, create a ngrok HTTPS URL:
@@ -16,13 +17,13 @@ If you don't have Gradle installed, just run `gradle.bat build` (Windows), or `.
 
 3. Finally, start the server:
 ```
-gradle build
+gradle run
 ```
 
 4. Check out a branch, make a change to a file, push the changes and watch the status of the commit change.
 
 ## Testing
-* `gradle build` compiles the program and runs all tests
+* `gradle build` compiles the program, checks code style and runs all tests
 * `gradle test` runs all tests
 * `gradle run` runs the program
 
