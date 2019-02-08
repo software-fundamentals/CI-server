@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class GitHubIntegration {
 
-    private static final String OATH_TOKEN = "Bearer 1e84fca5729b3639bc7846e1af58e49d77a13824";
+    private static final String OATH_TOKEN = "Bearer e4f67ede8dbd3b04dd460726f51365ae931e7eea";
     private static final String baseUrl = "https://api.github.com/repos/software-fundamentals/CI-server/statuses/";
 
     public static void setCommitStatus(String sha, JSONObject jsonBody) throws IOException, MalformedURLException {
