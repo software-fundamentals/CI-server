@@ -6,11 +6,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import org.json.JSONObject;
 
 public class GitHubIntegration {
 
-    private static final String OATH_TOKEN = "Bearer e4f67ede8dbd3b04dd460726f51365ae931e7eea";
+    DotEnv dotenv = DotEnv.load();
+    private static final String OAUTH_TOKEN = dotenv.get("GITHUB_TOKEN");
+
     private static final String baseUrl = "https://api.github.com/repos/software-fundamentals/CI-server/statuses/";
 
     public static void setCommitStatus(String sha, JSONObject jsonBody) throws IOException, MalformedURLException {
@@ -21,7 +25,7 @@ public class GitHubIntegration {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", OATH_TOKEN);
+            connection.setRequestProperty("Authorization", OAUTH_TOKEN);
             connection.connect();
 
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());

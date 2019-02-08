@@ -3,3 +3,20 @@
 
 # Ignore Gradle build output directory
 build
+
+#ignore env file
+.env
+
+#vscode
+.project
+.vscode
+.settings
+
+#ignore binary
+bin
+
+#ignore ngrok package
+ngrok
+
+#ignore repo cloned by server
+~
