@@ -12,6 +12,10 @@ public class SlackIntegration {
 
     private static final String SLACK_URL = "https://hooks.slack.com/services/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";
 
+    /**
+     * Establish connection to slack via webhook and send notification message. If error, client is notified.
+     * @param jsonBody JsonObject containing data from repo and response from gradle build.
+     */
     public static void notifySlack(JSONObject jsonBody) throws IOException, MalformedURLException {
         try {
             URL url = new URL (SLACK_URL);

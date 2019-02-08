@@ -32,6 +32,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
 {
     public ContinuousIntegrationServer() {}
 
+    /**
+     * @param request HttpServletRequest from github, webhook.
+     * @return parsedData, a hashmap of strings containing authorName, authorUrl, sha & compare
+     */
     public HashMap<String, String> parseJSON(HttpServletRequest request) {
         HashMap<String, String> parsedData = new HashMap<String, String>();
         try {
@@ -65,6 +69,16 @@ public class ContinuousIntegrationServer extends AbstractHandler
         return parsedData;
     }
 
+    /**
+     * The CI-handler, executing the following tasks:
+     *  1. Clones repo and checkout branch
+     *  2. Run gradle build in the branch including its corresponding tests
+     *  3. Emits notification status and message to slack and github
+     * @param target
+     * @param baseRequest
+     * @param request
+     * @param response
+     */
     public void handle(String target,
             Request baseRequest,
             HttpServletRequest request,
@@ -102,6 +116,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         }
     }
 
+    /**
+     * Clones the repo from the given url.
+     * @param url the repo to clone
+     * @param cloneDir specifying where to clone
+     */
     private void cloneRepo(String url, String cloneDir) {
         try {
             Git repo = Git.cloneRepository()
@@ -118,6 +137,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         }
     }
 
+    /**
+     * Pulls the given branch.
+     * @param gitDir the cloned directory
+     * @param branch the name of the branch
+     */
     private void pullBranch(String gitDir, String branch) {
         try {
             Repository fr = new FileRepositoryBuilder()
@@ -139,6 +163,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         }
     }
 
+    /**
+     * Executes the command gradle build in the given directory.
+     * @param dir The name of the directory to build gradle in
+     * @return A struct containing the result of the build (boolean) and the corresponding message/log
+     */
     private GradleBuildOutput runGradle(String dir) throws IOException {
         final Process p = Runtime.getRuntime().exec("gradle build -b " + dir.replace("~", "\\~") + "/build.gradle");
         StringBuilder successData = new StringBuilder();
@@ -178,7 +207,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
         }
     }
 
-    // used to start the CI server in command line
+    /**
+     * Used to start the CI server in command line
+     */
     public static void main(String[] args) throws Exception
     {
         Server server = new Server(8001);
