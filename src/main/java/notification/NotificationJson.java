@@ -7,7 +7,7 @@ public class NotificationJson {
 
     public static JSONObject createSlackJson(String authorName, String authorUrl, String title, String titleLink, String text, String color) {
         JSONObject attachment = new JSONObject();
-        attachment.put("fallback", "Unable to display repository status");
+        attachment.put("fallback", "New build: " + title);
         attachment.put("author_name", authorName);
         attachment.put("author_url", authorUrl);
         attachment.put("title", title);
