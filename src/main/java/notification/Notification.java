@@ -15,7 +15,7 @@ public class Notification {
         String color;
 
         if (success) {
-            color = "success";
+            color = "good";
             text += "SUCCESS";
         } else {
             color = "danger";
