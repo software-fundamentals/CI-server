@@ -2,7 +2,7 @@
 Continious Integration server.
 
 ## About
-A small CI server that uses a GitHub Webhook and [ngrok](https://ngrok.com) to listen for push events. The CI server has support for [Gradle](https://gradle.org/) and if the repository to where the push was made contains gradle tests, those are executed. The results from the tests are then added as a status to the latest commit at GitHub.
+A small CI server that uses a GitHub Webhook and [ngrok](https://ngrok.com) to listen for push events. The CI server has support for [Gradle](https://gradle.org/) and if the repository to where the push was made contains gradle tests, those are executed. The results from the tests are then added as a status to the latest commit at GitHub. The result of the test is also posted to a channel in our Slack team with information about what tests that ran, if they succeeded or failed and a link to GitHub where additional information about the commit can be found.
 
 ## Setup
 If you don't have Gradle installed, just run `gradle.bat build` (Windows), or `./gradle build` (OS X, GNU/Linux).
