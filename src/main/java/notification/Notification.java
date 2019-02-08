@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import org.json.JSONObject;
 
-
 public class Notification {
-    public static void createNotification(String authorName, String authorUrl, String branch, String compareUrl, String sha, Boolean success, String message) throws IOException {
+
+    public static void sendNotification(String authorName, String authorUrl, String branch, String compareUrl, String sha, Boolean success, String message) throws IOException {
         String title = "Commit on branch: " + branch;
         String text = "Build status: ";
         String color;
@@ -24,7 +24,9 @@ public class Notification {
 
         text += "\n" + message;
         JSONObject slackJson = NotificationJson.createSlackJson(authorName, authorUrl, title, compareUrl, text, color);
+        JSONObject gitJson = NotificationJson.createCommitJson(success ? "success" : "failure", "https://google.com", text, "Continuous Integration Server");
         SlackIntegration.notifySlack(slackJson);
+        GitHubIntegration.setCommitStatus(sha, gitJson);
     }
 }
 
