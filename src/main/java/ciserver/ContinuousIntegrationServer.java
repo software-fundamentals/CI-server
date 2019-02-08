@@ -108,9 +108,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
             GradleBuildOutput output = runGradle(cloneDir);
             System.out.println(output.result);
             System.out.println(output.log);
-            Notification.sendNotifications(parsedData.get("authorName"), parsedData.get("authorUrl"),
-                                            parsedData.get("branch"), parsedData.get("compareUrl"),
-                                            parsedData.get("sha"), output.result, output.log);
+            Notification.sendNotifications(parsedData, output.result, output.log);
         } catch (IOException e) {
             e.printStackTrace();
         }
