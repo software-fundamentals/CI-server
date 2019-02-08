@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class Notification {
 
-    public static void sendNotification(String authorName, String authorUrl, String branch, String compareUrl, String sha, Boolean success, String message) throws IOException {
+    public static void sendNotifications(String authorName, String authorUrl, String branch, String compareUrl, String sha, Boolean success, String message) throws IOException {
         String title = "Commit on branch: " + branch;
         String text = "Build status: ";
         String color;
