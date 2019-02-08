@@ -5,6 +5,11 @@ import org.json.JSONObject;
 
 public class NotificationJson {
 
+    /**
+     * Creates a jsonObject to be used for the slack integration message.
+     * @param authorName ...and further params... data from repo and response from gradle build
+     * @return A Json object containing the appropriate notification.
+     */
     public static JSONObject createSlackJson(String authorName, String authorUrl, String title, String titleLink, String text, String color) {
         JSONObject attachment = new JSONObject();
         attachment.put("fallback", "New build: " + title);

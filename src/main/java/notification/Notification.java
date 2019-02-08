@@ -9,6 +9,11 @@ import org.json.JSONObject;
 
 
 public class Notification {
+
+    /**
+     * Creates a notification and sends to slack.
+     * @param authorName ...and further params... data from repo and response from gradle build
+     */
     public static void createNotification(String authorName, String authorUrl, String branch, String compareUrl, String sha, Boolean success, String message) throws IOException {
         String title = "Commit on branch: " + branch;
         String text = "Build status: ";
