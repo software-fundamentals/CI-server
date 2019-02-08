@@ -2,6 +2,7 @@ package notification;
 
 import notification.NotificationJson;
 import notification.SlackIntegration;
+import notification.GitHubIntegration;
 
 import java.io.IOException;
 

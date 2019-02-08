@@ -11,10 +11,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
 
 public class GitHubIntegration {
-
     static Dotenv dotenv = Dotenv.load();
     private final static String OAUTH_TOKEN = dotenv.get("GITHUB_TOKEN");
-
     private final static String baseUrl = "https://api.github.com/repos/software-fundamentals/CI-server/statuses/";
 
     public static void setCommitStatus(String sha, JSONObject jsonBody) throws IOException, MalformedURLException {
