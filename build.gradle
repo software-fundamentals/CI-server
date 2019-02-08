@@ -45,6 +45,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
     compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '2.2.0.201212191850-r'
 
+    //https://github.com/cdimascio/java-dotenv
+    compile 'io.github.cdimascio:java-dotenv:3.1.7'
+
     // https://mvnrepository.com/artifact/org.springframework/spring-test
     testCompile group: 'org.springframework', name: 'spring-test', version: '4.0.5.RELEASE'
 

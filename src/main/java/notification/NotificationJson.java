@@ -27,4 +27,14 @@ public class NotificationJson {
         json.put("attachments", attachments);
         return json;
     }
+
+    public static JSONObject createCommitJson(String state, String targetUrl, String description, String context) {
+        JSONObject attachment = new JSONObject();
+        attachment.put("state", state);
+        attachment.put("target_url", targetUrl);
+        attachment.put("description", description);
+        attachment.put("context", context);
+
+        return attachment;
+    }
 }
