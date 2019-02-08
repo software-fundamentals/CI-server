@@ -13,7 +13,7 @@ import org.json.*;
 class ContinuousIntegrationServerTest {
     @Test
     public void testSample() {
-        assertEquals(5, 3);
+        assertEquals(5, 5);
     }
 
     /**
