@@ -5,9 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import java.io.*;
-import java.io.IOException;
-
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.Server;
@@ -16,7 +13,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import org.json.*;
 
-import notification.Notification;
+import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -32,28 +29,22 @@ public class ContinuousIntegrationServer extends AbstractHandler
 {
     public ContinuousIntegrationServer() {}
 
-    public HashMap<String, String> parseJSON(HttpServletRequest request) {
-        HashMap<String, String> parsedData = new HashMap<String, String>();
+    /**
+     * @Return {url, ref}
+     */
+    public String[] parseJSON(HttpServletRequest request) {
+        String[] parsedData = new String[2];
         try {
             JSONObject obj = new JSONObject(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
             try {
-                parsedData.put("repository_url", obj.getJSONObject("repository").getString("url"));
+                parsedData[0] = obj.getJSONObject("repository").getString("url");
             } catch (JSONException e) {
                 throw new java.lang.Error("Error occured parsing the GitHub url");
             }
             try {
-                parsedData.put("branch", obj.getString("ref"));
+                parsedData[1] = obj.getString("ref");
             } catch (JSONException e) {
                 throw new java.lang.Error("Error occured parsing the branch name");
-            }
-            try {
-                JSONObject sender = obj.getJSONObject("sender");
-                parsedData.put("authorName", sender.getString("login"));
-                parsedData.put("authorUrl", sender.getString("url"));
-                parsedData.put("sha", obj.getString("after"));
-                parsedData.put("compareUrl", obj.getString("compare"));
-            } catch (JSONException e) {
-                throw new java.lang.Error("Error occured parsing the sender data");
             }
         } catch (JSONException e) {
             throw new java.lang.Error("Error occured parsing the request");
@@ -80,23 +71,20 @@ public class ContinuousIntegrationServer extends AbstractHandler
             e.printStackTrace();
         }
 
-        HashMap<String, String> parsedData = parseJSON(request);
+        String[] parsedData = parseJSON(request);
         if (parsedData == null)
             return;
-        String url = parsedData.get("repository_url");
-        String branch = parsedData.get("branch");
+        String url = parsedData[0];
+        String branch = parsedData[1];
 
         String cloneDir = "~/CI";
         cloneRepo(url, cloneDir);
         pullBranch(cloneDir, branch);
 
-        try {
+        try { 
             GradleBuildOutput output = runGradle(cloneDir);
             System.out.println(output.result);
             System.out.println(output.log);
-            Notification.createNotification(parsedData.get("authorName"), parsedData.get("authorUrl"),
-                                            parsedData.get("branch"), parsedData.get("compareUrl"),
-                                            parsedData.get("sha"), output.result, output.log);
         } catch (IOException e) {
             e.printStackTrace();
         }
