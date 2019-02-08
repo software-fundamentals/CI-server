@@ -16,9 +16,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import org.json.*;
 
-//import notification.Notification;
-import notification.NotificationJson;
-import notification.GitHubIntegration;
+import notification.Notification;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -96,11 +94,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
             GradleBuildOutput output = runGradle(cloneDir);
             System.out.println(output.result);
             System.out.println(output.log);
-            // Notification.sendNotifications(parsedData.get("authorName"), parsedData.get("authorUrl"),
-            //                                 parsedData.get("branch"), parsedData.get("compareUrl"),
-            //                                 parsedData.get("sha"), output.result, output.log);
-            JSONObject object = NotificationJson.createCommitJson("success", "http://google.com/", "test", "CI SERVER");
-            GitHubIntegration.setCommitStatus(parsedData.get("sha"), object);
+            Notification.sendNotifications(parsedData.get("authorName"), parsedData.get("authorUrl"),
+                                            parsedData.get("branch"), parsedData.get("compareUrl"),
+                                            parsedData.get("sha"), output.result, output.log);
         } catch (IOException e) {
             e.printStackTrace();
         }
